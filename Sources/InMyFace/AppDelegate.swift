@@ -79,6 +79,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         overlay.present(
             meetings: meetings,
             snoozeMinutes: Preferences.snoozeMinutes,
+            displayTarget: Preferences.takeoverDisplay,
             onJoin: { [weak self] meeting in
                 self?.join(meeting)
                 meetings.forEach { self?.scheduler.dismiss($0) }
@@ -103,6 +104,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         overlay.present(
             meetings: [meeting],
             snoozeMinutes: Preferences.snoozeMinutes,
+            displayTarget: Preferences.takeoverDisplay,
             onJoin: { _ in },
             onSnooze: {},
             onDismiss: {}

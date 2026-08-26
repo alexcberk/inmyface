@@ -7,6 +7,7 @@ import Foundation
 struct Config: Codable, Equatable {
     var leadTimeSeconds = 60
     var snoozeMinutes = 5
+    var takeoverDisplay = "active"
     var onlyJoinable = false
     var menubarStyle = "iconOnly"
     var soundEnabled = true
@@ -32,6 +33,7 @@ struct Config: Codable, Equatable {
         }
         leadTimeSeconds = v(.leadTimeSeconds, 60)
         snoozeMinutes = v(.snoozeMinutes, 5)
+        takeoverDisplay = v(.takeoverDisplay, "active")
         onlyJoinable = v(.onlyJoinable, false)
         menubarStyle = v(.menubarStyle, "iconOnly")
         soundEnabled = v(.soundEnabled, true)

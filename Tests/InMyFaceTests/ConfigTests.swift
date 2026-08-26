@@ -10,6 +10,7 @@ struct ConfigTests {
         var cfg = Config()
         cfg.leadTimeSeconds = 120
         cfg.snoozeMinutes = 10
+        cfg.takeoverDisplay = "primary"
         cfg.onlyJoinable = true
         cfg.menubarStyle = "dayOfMonth"
         cfg.soundEnabled = false
@@ -34,6 +35,7 @@ struct ConfigTests {
         // Untouched fields fall back to defaults.
         #expect(cfg.leadTimeSeconds == 60)
         #expect(cfg.snoozeMinutes == 5)
+        #expect(cfg.takeoverDisplay == "active")
         #expect(cfg.menubarStyle == "iconOnly")
         #expect(cfg.soundEnabled)
         #expect(!cfg.launchAtLogin)

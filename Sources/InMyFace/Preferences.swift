@@ -34,6 +34,23 @@ enum Preferences {
         set { mutate { $0.snoozeMinutes = newValue } }
     }
 
+    enum TakeoverDisplay: String, CaseIterable {
+        case active
+        case primary
+
+        var label: String {
+            switch self {
+            case .active: return "Currently active display"
+            case .primary: return "Primary display"
+            }
+        }
+    }
+
+    static var takeoverDisplay: TakeoverDisplay {
+        get { TakeoverDisplay(rawValue: config.takeoverDisplay) ?? .active }
+        set { mutate { $0.takeoverDisplay = newValue.rawValue } }
+    }
+
     static var onlyJoinable: Bool {
         get { config.onlyJoinable }
         set { mutate { $0.onlyJoinable = newValue } }

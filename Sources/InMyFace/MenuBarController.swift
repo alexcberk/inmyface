@@ -342,6 +342,21 @@ final class MenuBarController {
 
         sub.addItem(.separator())
 
+        // Display that gets the interactive takeover; all others are dimmed.
+        let displayLabel = NSMenuItem(title: "Takeover display", action: nil, keyEquivalent: "")
+        displayLabel.isEnabled = false
+        sub.addItem(displayLabel)
+        for target in Preferences.TakeoverDisplay.allCases {
+            let choice = ClosureMenuItem(title: "  \(target.label)") { [weak self] in
+                Preferences.takeoverDisplay = target
+                self?.rebuild()
+            }
+            choice.state = (Preferences.takeoverDisplay == target) ? .on : .off
+            sub.addItem(choice)
+        }
+
+        sub.addItem(.separator())
+
         // Snooze length.
         let snoozeLabel = NSMenuItem(title: "Snooze length", action: nil, keyEquivalent: "")
         snoozeLabel.isEnabled = false

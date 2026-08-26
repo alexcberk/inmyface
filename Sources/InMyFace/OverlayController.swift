@@ -8,7 +8,7 @@ final class KeyableWindow: NSWindow {
     override var canBecomeMain: Bool { true }
 }
 
-/// Presents the takeover across every screen. The primary screen shows the
+/// Presents the takeover across every screen. The targeted screen shows the
 /// interactive content; other screens get a matching dim so nothing peeks
 /// through on a multi-monitor setup.
 @MainActor
@@ -19,17 +19,19 @@ final class OverlayController {
 
     func present(meetings: [Meeting],
                  snoozeMinutes: Int,
+                 displayTarget: Preferences.TakeoverDisplay,
                  onJoin: @escaping (Meeting) -> Void,
                  onSnooze: @escaping () -> Void,
                  onDismiss: @escaping () -> Void) {
         guard !isVisible, !meetings.isEmpty else { return }
         isVisible = true
 
-        let primary = NSScreen.main ?? NSScreen.screens.first
+        let targetScreen = screen(for: displayTarget)
+        var targetWindow: NSWindow?
         for screen in NSScreen.screens {
-            let isPrimary = (screen == primary)
+            let isTarget = (screen == targetScreen)
             let window = makeWindow(on: screen)
-            if isPrimary {
+            if isTarget {
                 let root = OverlayView(
                     meetings: meetings,
                     snoozeMinutes: snoozeMinutes,
@@ -38,6 +40,7 @@ final class OverlayController {
                     onDismiss: { [weak self] in self?.close(); onDismiss() }
                 )
                 window.contentView = NSHostingView(rootView: root)
+                targetWindow = window
             } else {
                 // Secondary screens: solid dim only.
                 let dim = NSView()
@@ -50,7 +53,7 @@ final class OverlayController {
         }
 
         NSApp.activate(ignoringOtherApps: true)
-        windows.first?.makeKeyAndOrderFront(nil)
+        targetWindow?.makeKeyAndOrderFront(nil)
 
         // Capture Esc (dismiss) and Return (join primary) at the AppKit level —
         // more reliable than SwiftUI focus on a borderless takeover window.
@@ -70,6 +73,16 @@ final class OverlayController {
 
         if Preferences.soundEnabled {
             NSSound(named: Preferences.soundName)?.play()
+        }
+    }
+
+    private func screen(for target: Preferences.TakeoverDisplay) -> NSScreen? {
+        switch target {
+        case .active:
+            return NSScreen.main ?? NSScreen.screens.first
+        case .primary:
+            return NSScreen.screens.first(where: { $0.frame.origin == .zero })
+                ?? NSScreen.screens.first
         }
     }
 
